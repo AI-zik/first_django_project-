@@ -1,0 +1,63 @@
+{% extends "blog/base.html"%}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ profile_owner.profile.image.url }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ profile_owner.username }}</h2>
+                <p class="text-secondary">{{ profile_owner.email }}</p>
+            </div>
+        </div>
+        <h3 class="mb-3 mt-3">{{ profile_owner.username }}'s posts</h3>
+        {% for post in page_obj %}
+        <article class="media content-section">
+            <img src="{{ post.author.profile.image.url }}" alt="" class="rounded-circle article-img">
+            <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{% url 'profile' post.author %}">{{ post.author }}</a>
+                <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
+            <p class="article-content">{{ post.content }}</p>
+            </div>
+        </article>
+        {% endfor %}
+
+        <!-- checking if the posts can be paginated -->
+        {% if page_obj.has_previous or page_obj.has_next %}
+
+            {% if page_obj.has_previous %}
+                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        {% endif %}
+        <!-- FORM HERE -->
+        {% if profile_owner == user %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+             <legend class="border-bottom mb-4">Profile Info</legend>
+             {{ u_form|crispy }}
+             {{ p_form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                 <button class="btn btn-outline-info" type="submit">Update</button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+{% endblock content %}
