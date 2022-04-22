@@ -1,4 +1,4 @@
-# first_django_project-
+# first django project
 This is my first project using the Django Framework for backend development in python
 
 I am adept at using the Flask framework as it is lightweight and highly customizable, but decided to learn the leading python framework for backend web development 
